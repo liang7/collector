@@ -1,0 +1,48 @@
+body {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+a,
+a:visited {
+    color: #42bd56;
+}
+
+h3 {
+    font-size: 16px;
+}
+
+.sub,
+pre {
+    padding: 15px;
+    margin: 0;
+    background: #f5f6f7;
+    border-radius: 5px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.sub {
+    word-break: break-all;
+}
+
+pre {
+    padding: 15px;
+    /* -webkit-overflow-scrolling: touch; */
+    /* overflow-x: auto; */
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.sub pre {
+    padding: 0;
+}
+
+p+p {
+    margin-bottom: 0;
+}

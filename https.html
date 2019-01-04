@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>https</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <h3>https</h3>
+  <pre>
+HTTPS 的基本运行过程
+
+  （1）使用非对称加密算法来获得对称加密算法的秘钥，从而保证了对称加密算法的秘钥的安全；速度慢、安全性
+
+  （2）利用对称加密算法来加密网页内容；速度快、不安全性
+
+SSL/TLS协议的基本过程是这样的：
+
+  （1） 客户端向服务器端索要并验证非对称加密算法的公钥。
+
+  （2） 双方协商生成对称加密算法的"对话密钥"。
+
+  （3） 双方采用对称加密算法和它的"对话密钥"进行加密通信。
+
+
+握手阶段的详细过程
+
+1) 客户端向服务器发出加密通信的请求并提供以下信息：
+
+  （1） 浏览器支持的SSL/TLS协议版本，比如TLS 1.0版。
+
+  （2） 一个浏览器客户端生成的随机数，稍后用于生成对称加密算法的"对话密钥"。
+
+  （3） 浏览器支持的各种加密方法，对称的，非对称的，HASH算法。比如RSA非对称加密算法，DES对称加密算法，SHA-1 hash算法。
+
+  （4） 浏览器支持的压缩方法。
+
+2) 服务器收到客户端请求后，向客户端发出回应，包含以下内容：
+
+  （1） 确认使用的加密通信协议版本，比如TLS 1.0版本。如果浏览器与服务器支持的版本不一致，服务器关闭加密通信。
+
+  （2） 一个服务器生成的随机数，稍后用于生成对称加密算法的"对话密钥"。
+
+  （3） 确认使用的各种加密方法，比如确认算法使用：RSA非对称加密算法，DES对称加密算法，SHA-1 hash算法
+
+  （4） 服务器证书（包含了网站地址，加密公钥，以及证书的颁发机构等信息）。
+
+3） 客户端收到服务器回应以后，首先验证服务器证书。如果证书不是可信机构颁布、或者证书中的域名与实际域名不一致、或者证书已经过期，就会向访问者显示一个警告，由其选择是否还要继续通信。如果证书没有问题，客户端就会从证书中取出服务器的非对称加密算法的公钥。然后，向服务器发送下面三项信息：
+
+  （1） 一个随机数。该随机数用服务器发来的公钥进行的使用非对称加密算法加密，防止被窃听。
+
+  （2） 编码改变通知，表示随后的信息都将用双方商定的加密方法和密钥发送(比如确认使用：RSA非对称，DES对称，SHA-1 hash算法)。
+
+  （3） 客户端握手结束通知，表示客户端的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供服务器校验。
+
+4) 服务器收到客户端的第三个随机数pre-master key之后，计算生成本次会话所用的对称加密算法的"会话密钥"。然后，向客户端最后发送下面信息：
+
+  （1）编码改变通知，表示随后的信息都将用双方商定的对称加密算法和密钥进行加密。
+
+  （2）服务器握手结束通知，表示服务器的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供客户端校验。
+
+
+HTTPS是如何防劫持的
+
+使用HSTS（HTTP+Strict+Transport+Security）。通过在HTTP+Header中加入Strict-Transport-Security的声明，告诉浏览器在一定时间内必须通过HTTPS协议访问本域名下的资源。
+
+1.CA证书保证了公钥的可靠性。
+2.服务端私钥+公钥的非对称加解密保证了客户端生成的随机数传输安全，不会被中间人拦截获取。But，非对称加密对服务端开销大。
+3.所以利用随机数的对称加密保证后续通讯的安全性，也可以降低服务器的解密开销。
+4.HTTPS只针对传输内容进行加密，保证的是客户端和网站之间的信息就算被拦截也无法破解。
+  </pre>
+  <h3>防止被劫持</h3>
+  <pre>
+针对注入js
+  添加资源过滤
+针对加载资源，添加白名单控制
+  csp（Content Security Policy）内容安全策略，属于浏览器的的一种安全策略，以白名单作为信任机制，来限制网站是否可以包涵某网站来源
+针对iframe嵌套
+  判断当前的窗口有没有被嵌套在别的窗口中，如果window.top = window.self 没嵌套 ，当前窗口就是顶层窗口
+  (function (window) {
+    if (window.location !== window.top.location) {
+        window.top.location = window.location;
+    }
+  })(this);
+  </pre>
+  
+</body>
+
+</html>

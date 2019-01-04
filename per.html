@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>性能优化</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+<h3>性能优化</h3>
+<pre>
+优化图像，考虑使用 WebP
+减小资源大小
+减少HTTP请求（雪碧图/Base64/使用缓存）
+减少DOM节点及操作
+
+检查 HTTP 缓存头是否设置正确
+静态资源cdn分发
+减少Cookie
+使用DNS预解析: link rel="dns-prefecth" href="https://www.google.com"
+
+优先加载关键的 CSS
+动态加载 JavaScript或者 预加载preload和资源预读取prefetch
+模块按需加载
+减少重绘回流
+img标签要设置高宽：减少重绘重排
+函数节流（throttle）与函数去抖（debounce）
+使用requestAnimationFrame代替setInterval
+清除定时器，清除事件监听器，及时回收内存
+</pre>
+<h3>静态资源（JS/CSS）存储在localStorage</h3>
+<div class="sub">
+  PC上应用价值不大：<br>
+  兼容性不太好，不支持LS的浏览器比例仍然很大<br>
+  网络速度快，协商缓存响应快，LS读取+eval很多时候会比不上304<br>
+  通常需要SEO，导致css不能缓存，仅缓存js使得整个缓存方案意义进一步减小<br>
+  浏览器本地缓存足够可靠持久<br><br>
+  移动端webapp值得一试：<br>
+  兼容性好<br>
+  网速慢，LS读取+eval大多数情况下快于304<br>
+  webapp不需要seo，css也可以缓存，再通过js加载<br>
+  浏览器缓存经常会被清理，LS被清理的几率低一些<br>
+</div>
+<a href="https://www.jianshu.com/p/a2cb1e3a79be">https://www.jianshu.com/p/a2cb1e3a79be</a>
+</body>
+
+</html>

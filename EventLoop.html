@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>Event Loop</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <h3>Event Loop</h3>
+  <div class="sub">
+    <p>（1）所有同步任务都在主线程上执行，形成一个执行栈（execution context stack）</p>
+    <p>（2）主线程之外，还存在一个"任务队列"（task queue）。只要异步任务有了运行结果，就在"任务队列"之中放置一个事件</p>
+    <p>（3）一旦"执行栈"中的所有同步任务执行完毕，系统就会读取"任务队列"，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行</p>
+    <p>（4）主线程不断重复上面的第三步</p>
+    <p>MacroTask: script(整体代码), setTimeout, setInterval, setImmediate（node独有）, MessageChannel，postMessage，I/O, UI rendering<br>
+      MicroTask: process.nextTick（node独有）, Promises, MutationObserver
+    </p>
+    <p>1、同一个上下文下，MicroTask会比MacroTask先运行</p>
+    <p>2、然后浏览器按照一个MacroTask任务，所有MicroTask的顺序运行，Node按照六个阶段的顺序运行，并在每个阶段后面都会运行MicroTask队列</p>
+    <p>3、同个MicroTask队列下process.tick()会优于Promise</p>
+  </div>
+
+</body>
+
+</html>

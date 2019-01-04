@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>css</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <h3>css设置高度和宽度一致</h3>
+  <div class="sub">
+    top margin-top bottom这种百分比是根据宽度来的 <br>
+    width:16%<br>
+    height:0<br>
+    padding-top:16%<br>
+  </div>
+  <h3>rgba设置的不透明度只作用与当前元素，而opacity会被子元素继承</h3>
+  <h3>动画过程有闪烁（一般出现在动画开始）</h3>
+  <pre>
+  -webkit-backface-visibility:hidden;
+  -moz-backface-visibility:hidden;
+  -ms-backface-visibility:hidden;
+  backface-visibility:hidden;
+  -webkit-perspective:1000;
+  -moz-perspective:1000;
+  -ms-perspective:1000;
+  perspective:1000;
+  </pre>
+  <h3>IOS:动画在刚进入页面的时候有可能不被触发，需要滑动一下屏幕动画才动，安卓下则没有问题</h3>
+  <pre>
+  animation: slide 1.5s 0.1s linear infinite;
+  webkit-animation: slide 1.5s 0.1s linear infinite;
+  原因大概是如果Safari和IOS的微信内置浏览器在加载资源，
+  或者进行什么内部渲染操作时出现了短暂的停顿(英文是hiccups)，
+  则不会触发动画，需要滑动一下页面来重新触发。
+  所以给动画加个0.1s延时确保资源加载完成后，问题得以解决。
+  </pre>
+  <h3>Retina屏 1px问题</h3>
+  <pre>
+  @mixin border-bottom-1px($color) {
+    position: relative;
+
+    &:after {
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-top: 1px solid $color;
+        content: ' ';
+    }
+  }
+  @media (-webkit-min-device-pixel-ratio: 1.5),
+  (min-device-pixel-ratio: 1.5) {
+      .border-bottom-1px {
+          &::after {
+              -webkit-transform: scaleY(0.7);
+              transform: scaleY(0.7);
+          }
+      }
+  }
+
+  @media (-webkit-min-device-pixel-ratio: 2),
+  (min-device-pixel-ratio: 2) {
+      .border-bottom-1px {
+          &::after {
+              -webkit-transform: scaleY(0.5);
+              transform: scaleY(0.5);
+          }
+      }
+  }
+
+  @media (-webkit-min-device-pixel-ratio: 3),
+  (min-device-pixel-ratio: 3) {
+      .border-bottom-1px {
+          &::after {
+              -webkit-transform: scaleY(0.3);
+              transform: scaleY(0.3);
+          }
+      }
+  }
+  </pre>
+</body>
+
+</html>

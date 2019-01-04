@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>Vue</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <h3>浅谈vue内部运行机制</h3>
+  <div class="sub">
+    <p>引入vue.js，new Vue()干了什么呢？</p>
+    <p>1、初始化<br>
+      调用Vue原型上的_init()进行初始化，会初始化vue的生命周期,props,data,methods,computed,watch，
+      最重要的是利用Object.defineProperty()对data对象里面的属性设置setter和getter函数，也就是来实现响应式和依赖收集
+    </p>
+    <p>2、挂载组件<br>
+      调用$mount挂载组件
+    </p>
+    <p>3、编译 compile<br>
+      编译三部曲，parse（解析）、optimize（标记静态节点做优化）、generate（转成字符串）<br>
+      parse：利用正则等方式解析 template 模板中的指令、class、style等数据，形成抽象语法树（AST）<br>
+      optimize： 标记static静态节点，以后update的时候，会有一个patch的过程，diff算法可以跳过静态节点<br>
+      generate：将抽象语法树（AST）转成字符串，供render去渲染DOM<br>
+    </p>
+    <p>经过以上步骤，就可以得到render funciton</p>
+    <p>4、响应式<br>
+      利用Object.definedProperty 设置data所返回的对象后，
+      在进行render function被渲染的时候，会对data对象进行数据读取，会触发getter函数，
+      从而把data里面的属性进行依赖收集，依赖收集的目的是将这些属性放到观察者（Watcher）的观察队列中，
+      一旦我们对data里面的属性进行修改时，就会触发setter函数，setter告诉观察者数据变化，
+      需要重新渲染视图，观察者调用update来更新视图
+    </p>
+    <p>5、虚拟DOM<br>
+      render funtion 会被转换成VNode节点，VNode实际上是对真实DOM抽象的一个js对象，
+      从顶层DOM层层描述DOM，有tag, children, isStatic, isComment等等许多属性来做DOM描述
+      <pre>
+      {
+        tag: 'div',                 /*说明这是一个div标签*/
+        children: [                 /*存放该标签的子节点*/
+            {
+                tag: 'a',           /*说明这是一个a标签*/
+                text: 'click me'    /*标签的内容*/
+            }
+        ]
+      }
+      </pre>
+    </p>
+    <p>6、更新视图<br>
+      当数据发生变化时候，会经历setter => Watcher => update这些步骤，那么最终是怎么更新视图的呢？<br>
+      在update的时候，会将新的VNode与旧的VNode一起传入patch函数进行比较，经过diff算法得出它们的「差异」。最后我们只需要将这些「差异」的对应 DOM 进行修改即可。<br>
+      <img style="width:100%" src="https://upload-images.jianshu.io/upload_images/7510511-c2ae527501cf39f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1000/format/webp">
+    </p>
+  </div>
+  <h3>Vue异步更新队列</h3>
+  <div class="sub">
+    Vue 异步执行 DOM 更新。只要观察到数据变化，Vue 将开启一个队列，并缓冲在同一事件循环中发生的所有数据改变。如果同一个 watcher 被多次触发，只会被推入到队列中一次。这种在缓冲时去除重复数据对于避免不必要的计算和 DOM 操作上非常重要。然后，在下一个的事件循环“tick”中，Vue 刷新队列并执行实际 (已去重的) 工作。Vue 在内部尝试对异步队列使用原生的 Promise.then 和 MessageChannel，如果执行环境不支持，会采用 setTimeout(fn, 0) 代替。
+  </div>
+  <h3>vue优化</h3>
+  <div class="sub">
+    <p>1、Object.freeze() 冻结对象，只是冻结该对象的属性，vue执行observe的时候会判断该属性的description中configurable是否为false（使用
+      Object.getOwnPropertyDescriptor(obj, key)查看某对象某属性是否可配置），若为false，则不为该属性添加set get，你更新该对象的属性值时，dom并不会更新</p>
+    <p>2、v-once 只渲染元素和组件一次</p>
+    <p>3、利用服务端渲染（SSR）和预渲染（Prerender）来优化加载性能</p>
+  </div>
+</body>
+
+</html>

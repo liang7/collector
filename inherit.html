@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>继承</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <h3>方法一：原型链继承</h3>
+  <pre>
+  function Person() {} // 父类
+  function Student(){} // 子类
+  Student.prototype = new Person() // 继承
+  缺点：会共享引用属性
+
+  // 父类
+  function Person() {
+    this.arr = ['a','b']
+    this.obj = {
+      name: 'lisi'
+    }
+    this.age = 17
+  }
+  // 子类
+  function Student(){}
+  // 继承
+  Student.prototype = new Person()
+
+  使用：
+  var s1 = new Student()
+  var s2 = new Student()
+
+  s1.arr.push('c')
+  console.log(s1.arr) // a,b,c
+  console.log(s2.arr) // a,b,c
+
+  s1.obj.name = 'zhangsan'
+  console.log(s1.obj.name) // zhangsan
+  console.log(s2.obj.name) // zhangsan
+
+  s1.age = 20
+  console.log(s1.age) // 20
+  console.log(s2.age) // 17
+  </pre>
+  <h3>方法二：构造函数继承</h3>
+  <pre>
+  // 父类
+  function Person(name) {
+    this.name = name
+  }
+  // 子类
+  function Student(name){
+    Person.call(this,name)
+  }
+
+  var s1 = new Student('lucy')
+  var s2 = new Student('lili')
+  console.log(s1.name) // lucy
+  console.log(s2.name) // lili
+
+  //Person.call(this) 的意思就是使用Person对象代替this对象，
+  那么s1、s2就能直接调用Person的所有属性和方法。
+  每个实例里面的函数,虽然功能一样,但是却不是同一个函数,
+  就相当于我们每实例化一个子类,就复制了一遍的函数代码。
+
+  缺点：会独享所有属性,包括引用属性(重点是函数)
+  </pre>
+  <h3>方法三：组合继承</h3>
+  <pre>
+  // 父类
+  function Person() {
+    this.arr = ['a','b']
+  }
+
+  // 父类函数
+  Person.prototype.say = function() {console.log('I am a person')}
+
+  // 子类
+  function Student(){
+    Person.call(this) // 构造函数继承(继承属性)
+  }
+  // 继承
+  Student.prototype = new Person() // 原型链继承(继承方法)
+
+  //利用原型链继承要共享的属性,利用构造函数继承要独享的属性
+
+  缺点：就是父类构造函数里面的代码会执行2遍，
+  第一遍是在原型继承的时候实例化父类,
+  第二遍是在子类的构造函数里面借用父类的构造函数
+  </pre>
+  <h3>方法四：原型式继承</h3>
+  <pre>
+  每个对象都有一个[[prototype]}隐藏属性，谁创建了它，
+  该属性就指向谁的prototype属性，因为是隐藏属性，
+  不能直接访问，所以有的浏览器提供了一个__proto__属性来访问。
+  
+  Object.create()创建一个新对象{}，且将现有的对象继承到__proto__属性上。
+  new Object(obj)做法是新建一个对象，并且让对象的__proto__指向了Base.prototype对象。
+
+  Object.prototype.create = Object.prototype.create || function (obj) {
+    let F = function () {} //创建一个临时性的构造函数
+    F.prototype = obj; //传入的参数作为构造函数的原型
+    return new F();
+  }
+
+  缺点：也有引用属性共享问题
+  </pre>
+  <h3>方法五：寄生组合式继承</h3>
+  <pre>
+  //理想的继承范式
+  function inherit(sub, super){
+    let prototype = Object.create(super.prototype) //复制父类super的原型对象
+    prototype.constructor = sub //constructor指向子类构造函数
+    sub.prototype = prototype //再把这个对象给子类的原型对象
+  }
+
+  function Super(name){
+    this.name = name;
+  }
+
+  Super.sayName = function(){
+    console.log(this.name)
+  }
+
+  function Sub(name,age){
+    Super.call(this,name);
+    this.age = age;
+  }
+
+  inherit(Sub,Super);
+
+  //说白了就是借用构造函数 + 相当于浅拷贝父类的原型对象
+  </pre>
+
+</body>
+
+</html>

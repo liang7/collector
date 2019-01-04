@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>其它</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <h3>new一个对象的过程发生了什么</h3>
+  <div class="sub">
+    创建一个新对象，同时继承对象类的原型，即Person.prototype；<br>
+    执行对象类的构造函数，同时该实例的属性和方法被this所引用，即this指向新构造的实例；<br>
+    如果构造函数return了一个新的“对象”，那么这个对象就会取代整个new出来的结果。<br>
+    如果构造函数没有return对象，那么就会返回步骤1所创建的对象，即隐式返回this。<br>
+    （一般情况下构造函数不会返回任何值，不过在一些特殊情况下，如果用户想覆盖这个值，可以选择返回一个普通的对象来覆盖。）
+  </div>
+  <h3>JavaScript 的事件流模型</h3>
+  <div class="sub">
+    1、事件捕捉阶段：事件开始由顶层对象触发，然后逐级向下传播，直到目标的元素；<br>
+    2、处于目标阶段：处在绑定事件的元素上；<br>
+    3、事件冒泡阶段：事件由具体的元素先接收，然后逐级向上传播，直到不具体的元素；
+  </div>
+  <h3>前端监控</h3>
+  <div class="sub">用过fundebug</div>
+  <h3>使用Promise简单封装ajax</h3>
+  <pre>
+  const ajaxPromise = (url)=>{
+    return new Promise((resolve, reject) => {
+      let xhr = new XMLHttpRequest()
+      xhr.open('GET', url, true)
+      xhr.send()
+      xhr.onreadystatechange = ()=>{
+        // readyState 4 代表已向服务器发送请求
+        // status 200 代表服务器返回成功
+        if(xhr.readyState === 4) {
+          if(xhr.status === 200) {
+            resolve(JSON.parse(xhr.response))
+          } else {
+            reject(xhr.responseText)
+          }
+        }
+      }
+    })
+  }
+  </pre>
+</body>
+
+</html>

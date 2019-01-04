@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="format-detection" content="email=no" />
+  <meta name="google" content="notranslate">
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>遇到的问题</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <h3>详情页返回列表页缓存数据和浏览位置、其他页面进入列表页刷新数据的实践</h3>
+  <pre>
+  解决方案：<a href="https://juejin.im/post/5b2ce07ce51d45588a7dbf76">https://juejin.im/post/5b2ce07ce51d45588a7dbf76</a>
+  activated() {
+    // useCache为false时才重新刷新获取数据
+    // 因为对list使用keep-alive来缓存组件，所以默认是会使用缓存数据的
+    if (!this.$route.meta.useCache) {
+      this.clear() // 清空原有数据
+    }
+    this.$route.meta.useCache = false
+  },
+  // 列表页面的beforeRouteLeave钩子函数
+  beforeRouteLeave(to, from, next) {
+    if (to.name == 'detail') {
+      from.meta.useCache = true
+    }
+    next();
+  }
+  </pre>
+  <h3>弹出遮罩层后，如何禁止底层页面的滚动</h3>
+  <pre>
+  body {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100 %;
+    height: 100 %;
+    overflow: hidden;
+  }
+
+  var modal = (function (bodyCls) {
+    var scrollTop; // 在闭包中定义一个用来保存滚动位置的变量
+    return {
+      afterOpen: function () { //弹出之后记录保存滚动位置，并且给body添加.modal-open
+        scrollTop = document.scrollingElement.scrollTop;
+        document.body.classList.add(bodyCls);
+        document.body.style.top = -scrollTop + 'px';
+      },
+      beforeClose: function () { //关闭时将.modal-open移除并还原之前保存滚动位置
+        document.body.classList.remove(bodyCls);
+        document.scrollingElement.scrollTop = scrollTop;
+      }
+    }
+  })('modal-open');
+  </pre>
+  <h3>浏览器刷新后保存vuex状态</h3>
+  <div class="sub">
+  localStorage、sessionStorage<br>
+  插件：vuex-along
+  </div>
+  <h3>移动端输入框被键盘挡住问题</h3>
+  <div class="sub">
+    TODO: 过获取输入框焦点将输入框定位到窗口略高于输入框的位置，在失去焦点键盘弹回时再恢复到底部
+  </div>
+  <h3>移动端网页上传图片自动旋转的问题</h3>
+  <div class="sub">
+    <p>Exif.js 读取图像的元数据</p>
+    <p>Exif.js 提供了 JavaScript 读取图像的原始数据的功能扩展，例如：拍照方向、相机设备型号、拍摄时间、ISO 感光度、GPS 地理位置等数据。</p>
+    <p>注意事项：EXIF 数据主要来自拍摄的照片，多用于移动端开发，PC 端也会用到，此插件兼容主流浏览器，IE10 以下不支持。</p>
+    <p>原理是把file通过<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader">FileReader</a>对象读取出来，然后使用<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/DataView">DataView</a>对象转换成二进制数组的格式，然后不断读取二进制数据的字节信息，判断出图片的方向，返回一个封装好的orientation值</p>
+    github：<br>
+    <a href="https://github.com/exif-js/exif-js">https://github.com/exif-js/exif-js</a><br>
+    <a href="https://github.com/lin-xin/blog/tree/master/file-demo">https://github.com/lin-xin/blog/tree/master/file-demo</a>
+  </div>
+  <h3>ios上设置overflow: scroll不滚动bug</h3>
+  <div class="sub">
+    safari浏览器在构建render tree的时候，会预先找到相应的overflow:<br>
+    scroll元素，在计算页面layout的时候，会计算父元素的高度与子元素的高度，<br>
+    若子元素高于父元素，则在render页面时为其建立一个原生的scrollView。<br>
+    当子元素的高度小于父元素的高度时，safari不会给父元素一个原生的scrollView。<br>
+    解决：<br>
+    针对这种情况，我们可以设置让浏览器一开始就给父元素增加scrollView，当我们的内容撑开，高过父元素的时候，就可以进行滑动。
+    <pre>
+    .small-nav-outer{
+      -webkit-overflow-scrolling: touch;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+    .small-nav-inner{
+      min-height: calc(100% + 1px);
+    }</pre>
+  </div>
+</body>
+
+</html>

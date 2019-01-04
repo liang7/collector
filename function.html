@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>常见的函数</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+<h3>超出整数存储范围的两个大整数相加</h3>
+<pre>
+Number.MAX_VALUE // 1.7976931348623157e+308
+Number.MAX_SAFE_INTEGER // 9007199254740991
+Number.MIN_VALUE // 5e-324
+Number.MIN_SAFE_INTEGER // -9007199254740991
+
+function add(a, b) {
+  let tmp = 0, res = '';
+  a = [...a]
+  b = [...b]
+  while (a.length || b.length || tmp) {
+      tmp += ~~a.pop() + ~~b.pop()
+      res = (tmp%10) + res
+      tmp = tmp > 9
+  }
+  return res.replace(/^0+/, '')
+}
+</pre>
+<h3>函数去抖（debounce）</h3>
+<pre>
+var debounce = function (time, action) {
+  var last
+  return function () {
+    var ctx = this,
+      args = arguments
+    clearTimeout(last)
+    last = setTimeout(function () {
+      action.apply(ctx, args)
+    }, time)
+  }
+}
+</pre>
+<h3>函数节流（throttle）</h3>
+<pre>
+var throttle = function (func, wait) {
+  var context, args, result;
+  var timeout = null;
+  var last = 0;
+
+  return function () {
+    var now = new Date().getTime();
+    var remaining = wait - (now - last);
+    context = this;
+    args = arguments;
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      last = now;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    } else if (!timeout) {
+      timeout = setTimeout(function () {
+        last = new Date().getTime();
+        timeout = null;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      }, remaining);
+    }
+    return result;
+  };
+}
+</pre>
+<h3>bind函数</h3>
+<pre>
+bind()方法会创建一个新函数，称为绑定函数
+Function.prototype.bind = Function.prototype.bind || function (context) {
+  var self = this;
+  var args = Array.prototype.slice.call(arguments);
+  return function () {
+    return self.apply(context, args);
+  };
+}
+</pre>
+<h3> apply、call、bind比较</h3>
+<pre>
+共同点：都是用来改变函数的this对象的指向的
+区别：call需要把参数按顺序传递进去，而apply则是把参数放在数组里
+var obj = {
+  x: 81,
+};
+var foo = {
+  getX: function () {
+    return this.x;
+  }
+}
+console.log(foo.getX.bind(obj)()); //81
+console.log(foo.getX.call(obj)); //81
+console.log(foo.getX.apply(obj)); //81
+<a href="https://www.cnblogs.com/libin-1/p/6069031.html">https://www.cnblogs.com/libin-1/p/6069031.html</a>
+</pre>
+<h3>Object.create(null) 和 {} 区别是什么</h3>
+<div class="sub">
+  <p>
+    传统对象写法为 var obj = {} 这种写法等价于 var obj = Object.create(Object.prototype) ，<br>
+    所以 {} 并不是真正的空对象，它还通过原型链继承了 Object 的属性方法。<br>
+    这种方式不好地方是，{} 在某些时候会进行隐式类型转型，<br>
+    还有当我们使用 for...in 时候会遍历原形链上的属性方法，如下面的代码所示。
+  </p>
+  <pre>
+  Object.prototype.test = 'test';
+  var obj = {};
+  console.log((obj + 0).length); // 16
+  for (var i in obj) {
+    console.log(i); // 输出 test
+  }
+  </pre>
+  <p>
+    当对象和数值进行运算的时候会对对象进行隐式转换，<br>
+    {} + 1 就变成了 [object Object] + 0 所以计算结果的长度为 16。<br>
+    for...in 进行遍历的时候也会遍历原型链可枚举的属性，<br>
+    所以当遍历的时候还需要使用 hasOwnProperty 进行过滤操作。     
+  </p>
+  <p>
+    而 Object.create(null) 没有这样的问题，是一个没有继承 Object 原型的属性和方法的纯对象。
+    <br>在js中null是没有任何属性和方法的
+  </p>
+  <br>
+</div>
+</body>
+
+</html>
